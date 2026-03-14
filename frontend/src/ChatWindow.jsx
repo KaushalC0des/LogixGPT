@@ -10,7 +10,15 @@ function ChatWindow() {
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsopen] = useState(false);
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+         window.location.href = "/login";
+    };
+
     const getReply = async () => {
+        if(!prompt.trim()) return;
+        const token = localStorage.getItem("token");
+        console.log("TOKEN", token);
         setLoading(true);
         setNewChat(false);
          console.log("message:", prompt, "threadId:", currThreadId);
@@ -18,7 +26,8 @@ function ChatWindow() {
         const options = {
             method: "POST",
             headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({
             message: prompt,
@@ -28,6 +37,13 @@ function ChatWindow() {
 
         try {
             const response = await fetch("http://localhost:5000/api/chat", options);
+
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                window.location.href = "/login";
+                return;
+            }
+
             const data = await response.json();
 
             console.log("🤖 AI reply (from backend):", data.reply); // ✅ This will print in browser console
@@ -75,8 +91,8 @@ function ChatWindow() {
                     isOpen &&
                     <div className="dropDown">
                         <div className="dropDownItem"> <i class="fa-solid fa-gear"></i> Settings</div>
-                          <div className="dropDownItem" > <i class="fa-solid fa-arrow-up"></i> Upgrade Plan </div>
-                        <div className="dropDownItem"> <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+                          <div className="dropDownItem" > <i className="fa-solid fa-arrow-up"></i> Upgrade Plan </div>
+                        <div className="dropDownItem" onClick={handleLogout}> <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
                     </div>
                 }
                 

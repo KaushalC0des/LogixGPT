@@ -1,12 +1,14 @@
 import express from "express";
 import Thread from "../models/Thread.js";
 import getOllamaResponse from "../utils/ollama.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/test", async(req,res) => {
+router.post("/test", authMiddleware, async(req,res) => {
     try{
         const thread = new Thread({
+             userId: req.user.userId,
             threadId: "xyz",
             tittle: "Testing your thread"
         });
@@ -19,9 +21,11 @@ router.post("/test", async(req,res) => {
     }   
 });
 
-router.get("/thread", async(req,res) => {
+router.get("/thread", authMiddleware, async(req,res) => {
     try{
-        const threads = await Thread.find({}).sort({updatedAt: -1});
+        const threads = await Thread
+        .find({ userId: req.user.userId })
+        .sort({updatedAt: -1});
         res.json(threads);
     } catch(err) {
         console.log(err);
@@ -29,27 +33,34 @@ router.get("/thread", async(req,res) => {
     }
 })
 
-router.get("/thread/:threadId", async(req,res) => {
-    const {threadId} = req.params;
+router.get("/thread/:threadId", authMiddleware, async (req, res) => {
 
-    try{
-        const thread = await Thread.findOne({threadId});
+  const { threadId } = req.params;
 
-        if(!thread){
-            return res.status(404).json({error:"Thread not found"})
-        }
-        
-        res.json(thread.messages);
-    } catch(err) {
-        console.log(err);
-        res.status(500).json({error:"failed to fetch chat"});
+  try {
+
+    const thread = await Thread.findOne({
+      threadId,
+      userId: req.user.userId
+    });
+
+    if (!thread) {
+      return res.status(404).json({ error: "Thread not found" });
     }
+
+    res.json(thread.messages);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "failed to fetch chat" });
+  }
+
 });
 
-router.delete("/thread/:threadId", async(req,res) => {
+router.delete("/thread/:threadId", authMiddleware, async(req,res) => {
     const {threadId} = req.params;
     try{
-        const deletedThread = await Thread.findOneAndDelete({threadId});
+        const deletedThread = await Thread.findOneAndDelete({threadId,userId: req.user.userId});
 
         if(!deletedThread){
             return res.status(404).json({error:"Thread not found"});
@@ -62,7 +73,7 @@ router.delete("/thread/:threadId", async(req,res) => {
     }
 });
 
-router.post("/chat", async(req,res) => {
+router.post("/chat", authMiddleware, async(req,res) => {
     const {threadId,message} = req.body;
     
     if(!threadId || !message){
@@ -70,10 +81,11 @@ router.post("/chat", async(req,res) => {
     }
 
     try{
-        let thread = await Thread.findOne({threadId});
+        let thread = await Thread.findOne({threadId,userId:req.user.userId});
 
         if(!thread){
             thread = new Thread({
+                userId : req.user.userId,
                 threadId,
                 title : message,
                 messages: [{role:"user", content:message}]

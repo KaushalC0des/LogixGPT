@@ -5,25 +5,25 @@ import { MyContext } from "./MyContext";
 import {v1 as uuidv1} from "uuid";
 
 function Sidebar() {
-    const {allThreads, setAllThreads,currThreadId,setNewChat, setPrompt, setReply, setCurrThreadId, setPrevChats} = useContext(MyContext);
+    const {allThreads, setAllThreads, currThreadId, setNewChat, setPrompt, setReply, setCurrThreadId, setPrevChats} = useContext(MyContext);
 
     const getAllThreads = async () => {
-        
-        try{
-            const response = await fetch("http://localhost:5000/api/thread");
+        try {
+            const token = localStorage.getItem("token"); 
+            const response = await fetch("http://localhost:5000/api/thread", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             const res = await response.json();
             const filteredData = res.map(thread => ({threadId: thread.threadId, title: thread.title}));
-            // console.log(filteredData);
-            // console.log(res);
             setAllThreads(filteredData);
-        } catch(err){
+        } catch(err) {
             console.log(err);
-        };
+        }
     };
 
     useEffect(() => {
         getAllThreads();
-    },[currThreadId])
+    }, [currThreadId]);
 
     const createNewChat = () => {
         setNewChat(true);
@@ -31,39 +31,46 @@ function Sidebar() {
         setReply(null);
         setCurrThreadId(uuidv1());
         setPrevChats([]);
-    }
+    };
 
     const changeThread = async (newThreadId) => {
         setCurrThreadId(newThreadId);
-
-        try{
-            const response = await fetch(`http://localhost:5000/api/thread/${newThreadId}`);
+        // ✅ FIX 1: token was used but never declared — added this line
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`http://localhost:5000/api/thread/${newThreadId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             const res = await response.json();
             console.log(res);
             setPrevChats(res);
             setNewChat(false);
             setReply(null);
-        } catch(err){
+        } catch(err) {
             console.log(err);
         }
-    }
+    };
 
-    const deleteThread = async(threadId) => {
+    const deleteThread = async (threadId) => {
+        // ✅ FIX 2: Authorization header was missing — backend rejected the delete
+        const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:5000/api/thread/${threadId}`, {method: "DELETE"})
+            const response = await fetch(`http://localhost:5000/api/thread/${threadId}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` }
+            });
             const res = await response.json();
             console.log(res);
 
-            //updated threads re-render
-            setAllThreads(prev => prev.filter(thread => thread.threadId != threadId));
+            setAllThreads(prev => prev.filter(thread => thread.threadId !== threadId));
 
-            if(threadId === currThreadId){
+            if (threadId === currThreadId) {
                 createNewChat();
-            } 
-        } catch(err){
+            }
+        } catch(err) {
             console.log(err);
         }
-    }    
+    };
 
     return (
         <section className="sidebar">
@@ -77,13 +84,12 @@ function Sidebar() {
                     allThreads?.map((thread, idx) => (
                         <li key={idx}
                             onClick={() => changeThread(thread.threadId)}
-
-                            className={thread.threadId === currThreadId ? "highlighted":" "}
+                            className={thread.threadId === currThreadId ? "highlighted" : " "}
                         >
                             {thread.title}
                             <i className="fa-solid fa-trash"
                                 onClick={(e) => {
-                                    e.stopPropagation(); // stop event bubbling
+                                    e.stopPropagation();
                                     deleteThread(thread.threadId);
                                 }}
                             ></i>
@@ -93,7 +99,7 @@ function Sidebar() {
             </ul>
 
             <div className="sign">
-                <p> By Logix &hearts;</p>
+                <p>By Logix &hearts;</p>
             </div>
         </section>
     );

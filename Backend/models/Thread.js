@@ -17,20 +17,30 @@ const MessageSchema = new mongoose.Schema({
 });
 
 const ThreadSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,   // ✅ correct
+    ref: "user",
+    required: true
+  },
+
   threadId: {
     type: String,
     required: true,
     unique: true
   },
+
   title: {
     type: String,
     default: "New Chat"
   },
+
   messages: [MessageSchema],
+
   createdAt: {
     type: Date,
     default: Date.now
   },
+
   updatedAt: {
     type: Date,
     default: Date.now
