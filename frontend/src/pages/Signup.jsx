@@ -55,7 +55,7 @@ function Signup() {
                 setError(data.error || "Signup failed. Please try again.");
             } else {
                 localStorage.setItem("token", data.token);
-                navigate("/");
+                window.location.href = "/chat";
             }
         } catch (err) {
             setError("Could not connect to server.");
