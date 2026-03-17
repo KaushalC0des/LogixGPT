@@ -9,29 +9,28 @@ function ChatWindow() {
     const {prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat} = useContext(MyContext);
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsopen] = useState(false);
+    const [listening, setListening] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-         window.location.href = "/login";
+        window.location.href = "/login";
     };
 
     const getReply = async () => {
         if(!prompt.trim()) return;
         const token = localStorage.getItem("token");
-        console.log("TOKEN", token);
         setLoading(true);
         setNewChat(false);
-         console.log("message:", prompt, "threadId:", currThreadId);
 
         const options = {
             method: "POST",
             headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({
-            message: prompt,
-            threadId: currThreadId
+                message: prompt,
+                threadId: currThreadId
             })
         };
 
@@ -45,10 +44,6 @@ function ChatWindow() {
             }
 
             const data = await response.json();
-
-            console.log("🤖 AI reply (from backend):", data.reply); // ✅ This will print in browser console
-
-            // If you want to store it in state:
             setReply(data.reply);
 
         } catch (err) {
@@ -69,57 +64,95 @@ function ChatWindow() {
                 }]
             ))
         }
-
         setPrompt("");
     }, [reply]);
 
     const handleProfileClick = () => {
         setIsopen(!isOpen);
-    }
+    };
+
+    const startListening = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if(!SpeechRecognition){
+            alert("Your browser doesn't support voice input. Try Chrome.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setListening(true);
+        recognition.onend = () => setListening(false);
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setPrompt(transcript);
+        };
+
+        recognition.onerror = (e) => {
+            console.error("Speech error:", e.error);
+            setListening(false);
+        };
+
+        recognition.start();
+    };
 
     return (
-            <div className="chatWindow">
-                <div className="navbar">
-                    <span>Logix <i className=" fa-solid fa-chevron-down"></i></span>
-            
-                    <div className="userIconDiv" onClick={handleProfileClick}>
-                        <span className="userIcon"><i className="fa-solid fa-user"></i></span>
-                    </div>
-                </div>
-
-                {
-                    isOpen &&
-                    <div className="dropDown">
-                        <div className="dropDownItem"> <i class="fa-solid fa-gear"></i> Settings</div>
-                          <div className="dropDownItem" > <i className="fa-solid fa-arrow-up"></i> Upgrade Plan </div>
-                        <div className="dropDownItem" onClick={handleLogout}> <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
-                    </div>
-                }
-                
-                <Chat/>
-
-                <ScaleLoader color="#fff" loading={loading}></ScaleLoader>
-
-                <div className="chatInput">
-                    <div className="inputBox">
-                        <input
-                            placeholder="Ask anything"
-                            className="input"
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
-                            onKeyDown={(e) => {
-                             if (e.key === "Enter") getReply();
-                            }}
-                        />
-
-                        <div id="submit" onClick={getReply}><i className="fa-solid fa-paper-plane"></i></div>
-                    </div>
-                    <p className="info">
-                        logix can make mistakes. check important info. see cookie prefrences.
-                    </p>
+        <div className="chatWindow">
+            <div className="navbar">
+                <span>Logix <i className="fa-solid fa-chevron-down"></i></span>
+                <div className="userIconDiv" onClick={handleProfileClick}>
+                    <span className="userIcon"><i className="fa-solid fa-user"></i></span>
                 </div>
             </div>
-    )
+
+            {
+                isOpen &&
+                <div className="dropDown">
+                    <div className="dropDownItem"><i className="fa-solid fa-gear"></i> Settings</div>
+                    <div className="dropDownItem"><i className="fa-solid fa-arrow-up"></i> Upgrade Plan</div>
+                    <div className="dropDownItem" onClick={handleLogout}><i className="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+                </div>
+            }
+
+            <Chat/>
+
+            <ScaleLoader color="#fff" loading={loading}/>
+
+            <div className="chatInput">
+                <div className="inputBox">
+                    <input
+                        placeholder="Ask anything"
+                        className="input"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") getReply();
+                        }}
+                    />
+
+                   
+                    <div
+                        id="mic"
+                        onClick={startListening}
+                        title={listening ? "Listening..." : "Click to speak"}
+                        style={{ color: listening ? "#2dd4bf" : "white", cursor: "pointer", marginRight: "8px" }}
+                    >
+                        <i className={listening ? "fa-solid fa-microphone-lines" : "fa-solid fa-microphone"}></i>
+                    </div>
+
+                    <div id="submit" onClick={getReply}>
+                        <i className="fa-solid fa-paper-plane"></i>
+                    </div>
+                </div>
+                <p className="info">
+                    logix can make mistakes. check important info. see cookie preferences.
+                </p>
+            </div>
+        </div>
+    );
 }
 
 export default ChatWindow;

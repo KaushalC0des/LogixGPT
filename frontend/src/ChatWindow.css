@@ -45,18 +45,19 @@
 
 .inputBox {
     width: 100%;
-    position: relative;
     max-width: 700px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding-right: 10px;
 }
 
 .input {
     width: 100%;
     border: none;   
     background-color: rgba(255,255,255,0.05);
-    padding: 20px;
+    padding: 20px 90px 20px 20px;
     font-size: 0.8rem;
     border-radius: 14px;
     box-shadow: rgba(0,0,0,0,05)0 54px 55px,
@@ -76,11 +77,10 @@ input:focus {
     height: 35px;
     width: 35px;
     font-size: 20px;
-    position: absolute;
-    right: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 #submit i:hover {
@@ -118,6 +118,18 @@ input:focus {
     border-radius:  6px;
 }
 
+#mic {
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+    color: white;
+}
+
+#mic:hover {
+    color: #2dd4bf !important;
+}
 
 
 
