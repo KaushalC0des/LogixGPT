@@ -10,6 +10,21 @@ function ChatWindow() {
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsopen] = useState(false);
     const [listening, setListening] = useState(false);
+    const [user, setUser] = useState(null);
+    const [showSettings,  setShowSettings] = useState(false);
+
+    useEffect(() => {
+    const fetchUser = async () => {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:5000/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        // ✅ Only store what you need
+        setUser({ name: data.name, email: data.email });
+    };
+         fetchUser();
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -108,14 +123,37 @@ function ChatWindow() {
                 </div>
             </div>
 
-            {
-                isOpen &&
-                <div className="dropDown">
-                    <div className="dropDownItem"><i className="fa-solid fa-gear"></i> Settings</div>
-                    <div className="dropDownItem"><i className="fa-solid fa-arrow-up"></i> Upgrade Plan</div>
-                    <div className="dropDownItem" onClick={handleLogout}><i className="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+            {isOpen && (
+                    <div className="dropDown">
+                
+                    <div className="dropDownItem" onClick={() => setShowSettings(!showSettings)}>
+                        <i className="fa-solid fa-gear"></i> Settings
+                    </div>
+
+                
+                    {showSettings && user && (
+                        <div className="userInfo">
+                            <div className="userInfoItem">
+                                <i className="fa-solid fa-user"></i>
+                                <span>{user.name}</span>
+                            </div>
+                            <div className="userInfoItem">
+                                <i className="fa-regular fa-envelope"></i>
+                                <span>{user.email}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="dropDownItem">
+                        <i className="fa-solid fa-arrow-up"></i> Upgrade Plan
+                        <span className="comingSoon">Soon</span>
+                    </div>
+
+                    <div className="dropDownItem" onClick={handleLogout}>
+                        <i className="fa-solid fa-arrow-right-from-bracket"></i> Log out
+                    </div>
                 </div>
-            }
+)}
 
             <Chat/>
 

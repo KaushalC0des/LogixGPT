@@ -131,6 +131,39 @@ input:focus {
     color: #2dd4bf !important;
 }
 
+.userInfo {
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin: 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.userInfoItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+}
+
+.userInfoItem i {
+    color: #2dd4bf;
+    width: 14px;
+}
+
+.comingSoon {
+    background: #2dd4bf;
+    color: #0d0d0d;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-left: auto;
+}
+
 
 
 

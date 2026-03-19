@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -74,6 +75,17 @@ router.post("/login", async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Login failed" });
   }
+});
+
+router.get("/me", authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found" });
+        // ✅ Only send what you need
+        res.json({ name: user.name, email: user.email });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to get user" });
+    }
 });
 
 export default router;
