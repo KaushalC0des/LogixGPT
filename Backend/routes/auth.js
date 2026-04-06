@@ -27,6 +27,8 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword
     });
 
+    await newUser.save();
+
     const token = jwt.sign(
     { userId: newUser._id },
     process.env.JWT_SECRET,

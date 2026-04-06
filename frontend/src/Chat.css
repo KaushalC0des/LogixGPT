@@ -66,6 +66,19 @@ pre {
   background: transparent;
 }
 
+@media (max-width: 768px) {
+    .chats {
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .userMessage {
+        margin-left: 1rem;
+        max-width: 80vw;
+    }
+}
+
 /* User message row */
 /* .userDiv {
   display: flex;

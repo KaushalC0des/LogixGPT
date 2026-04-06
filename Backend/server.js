@@ -10,8 +10,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api", chatRoutes); 
+
 app.use("/api/auth", authRoutes);
+app.use("/api", chatRoutes);
+
+app.get("/test", (req, res) => res.json({ message: "server works" }));
+app.use((req, res) => {
+    console.log("❌ Route not found:", req.method, req.url);
+    res.status(404).json({ error: "Route not found" });
+});
 
 const connectDB = async () => {
   try {
