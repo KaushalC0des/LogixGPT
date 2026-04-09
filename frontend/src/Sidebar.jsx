@@ -10,7 +10,7 @@
 //     const getAllThreads = async () => {
 //         try {
 //             const token = localStorage.getItem("token"); 
-//             const response = await fetch("http://localhost:5000/api/thread", {
+//             const response = await fetch("https://logixgpt.onrender.com//api/thread", {
 //                 headers: { Authorization: `Bearer ${token}` }
 //             });
 //             const res = await response.json();
@@ -38,7 +38,7 @@
 //         // ✅ FIX 1: token was used but never declared — added this line
 //         const token = localStorage.getItem("token");
 //         try {
-//             const response = await fetch(`http://localhost:5000/api/thread/${newThreadId}`, {
+//             const response = await fetch(`https://logixgpt.onrender.com//api/thread/${newThreadId}`, {
 //                 headers: { Authorization: `Bearer ${token}` }
 //             });
 //             const res = await response.json();
@@ -55,7 +55,7 @@
 //         // ✅ FIX 2: Authorization header was missing — backend rejected the delete
 //         const token = localStorage.getItem("token");
 //         try {
-//             const response = await fetch(`http://localhost:5000/api/thread/${threadId}`, {
+//             const response = await fetch(`https://logixgpt.onrender.com//api/thread/${threadId}`, {
 //                 method: "DELETE",
 //                 headers: { Authorization: `Bearer ${token}` }
 //             });
@@ -120,7 +120,7 @@ function Sidebar() {
     const getAllThreads = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/thread", {
+            const response = await fetch("https://logixgpt.onrender.com//api/thread", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const res = await response.json();
@@ -148,7 +148,7 @@ function Sidebar() {
         setCurrThreadId(newThreadId);
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:5000/api/thread/${newThreadId}`, {
+            const response = await fetch(`https://logixgpt.onrender.com//api/thread/${newThreadId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const res = await response.json();
@@ -164,7 +164,7 @@ function Sidebar() {
     const deleteThread = async (threadId) => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:5000/api/thread/${threadId}`, {
+            const response = await fetch(`https://logixgpt.onrender.com//api/thread/${threadId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });

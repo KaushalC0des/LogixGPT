@@ -16,7 +16,7 @@ function ChatWindow() {
     useEffect(() => {
     const fetchUser = async () => {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/auth/me", {
+        const res = await fetch("https://logixgpt.onrender.com//api/auth/me", {
             headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -50,7 +50,7 @@ function ChatWindow() {
         };
 
         try {
-            const response = await fetch("http://localhost:5000/api/chat", options);
+            const response = await fetch("https://logixgpt.onrender.com//api/chat", options);
 
             if (response.status === 401) {
                 localStorage.removeItem("token");

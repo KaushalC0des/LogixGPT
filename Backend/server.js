@@ -26,7 +26,7 @@ const connectDB = async () => {
     console.log("✅ Connected with database");
 
     app.listen(5000, () => {
-      console.log("🚀 Server running on http://localhost:5000");
+      console.log("🚀 Server running on https://logixgpt.onrender.com/");
     });
 
   } catch (err) {
