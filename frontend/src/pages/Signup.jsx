@@ -45,7 +45,7 @@ function Signup() {
         setLoading(true);
         setError("");
         try {
-            const response = await fetch("https://logixgpt.onrender.com//api/auth/signup", {
+            const response = await fetch("https://logixgpt.onrender.com/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name : username, email, password }),
