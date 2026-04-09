@@ -10,7 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 app.use("/api/auth", authRoutes);
 app.use("/api", chatRoutes);
 
@@ -25,8 +24,10 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("✅ Connected with database");
 
-    app.listen(5000, () => {
-      console.log("🚀 Server running on https://logixgpt.onrender.com/");
+    // ✅ Use Render's PORT or fallback to 5000 locally
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
 
   } catch (err) {
