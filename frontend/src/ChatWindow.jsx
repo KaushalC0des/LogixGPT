@@ -50,7 +50,7 @@ function ChatWindow() {
         };
 
         try {
-            const response = await fetch("https://logixgpt.onrender.com//api/chat", options);
+            const response = await fetch("https://logixgpt.onrender.com/api/chat", options);
 
             if (response.status === 401) {
                 localStorage.removeItem("token");
